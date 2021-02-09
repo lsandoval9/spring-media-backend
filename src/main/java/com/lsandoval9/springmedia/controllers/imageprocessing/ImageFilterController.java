@@ -1,16 +1,16 @@
 package com.lsandoval9.springmedia.controllers.imageprocessing;
 
 import com.lsandoval9.springmedia.helpers.ImageHelpersService;
-import com.lsandoval9.springmedia.services.BasicFilterService;
+import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
+import com.lsandoval9.springmedia.helpers.enums.UNICOLOR_FILTER_VALUES;
+import com.lsandoval9.springmedia.services.CommonImageFilterService;
+import com.lsandoval9.springmedia.services.BasicImageFilterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,14 +26,18 @@ public class ImageFilterController {
 
     private final ImageHelpersService imageHelpersService;
 
-    private final BasicFilterService basicFilterService;
+    private final CommonImageFilterService commonImageFilterService;
+
+    private final BasicImageFilterService basicImageFilterService;
 
     @Autowired
     public ImageFilterController(@Qualifier("imageHelpersService") ImageHelpersService imageHelpersService,
-                                 @Qualifier("basicFilterService") BasicFilterService basicFilterService) {
+                                 @Qualifier("commonImageFilterService") CommonImageFilterService commonImageFilterService,
+                                 BasicImageFilterService basicImageFilterService) {
 
 
-        this.basicFilterService = basicFilterService;
+        this.commonImageFilterService = commonImageFilterService;
+        this.basicImageFilterService = basicImageFilterService;
         this.log = LoggerFactory.getLogger(ImageFilterController.class);
         this.imageHelpersService = imageHelpersService;
     }
@@ -49,12 +53,12 @@ public class ImageFilterController {
 
         imageHelpersService.isFileValid(file, imageType);
 
-        return basicFilterService.addSepiaFilter(file, imageHelpersService.getExtension(imageType));
+        return commonImageFilterService.addSepiaFilter(file, imageHelpersService.getExtension(imageType));
 
     }
 
 
-    @PostMapping(path = "/reflect",  produces = {"image/png", "image/jpeg", "image/webp"})
+    @PostMapping(path = "/reflect", produces = {"image/png", "image/jpeg", "image/webp"})
     public byte[] addReflectFilter(@RequestBody MultipartFile file) throws IOException {
 
         String imageType = imageHelpersService.getImageType(file);
@@ -63,7 +67,7 @@ public class ImageFilterController {
 
         imageHelpersService.isFileValid(file, imageType);
 
-        return basicFilterService.addReflectFilter(file, imageHelpersService.getExtension(imageType));
+        return commonImageFilterService.addReflectFilter(file, imageHelpersService.getExtension(imageType));
 
     }
 
@@ -75,7 +79,7 @@ public class ImageFilterController {
 
         imageHelpersService.isFileValid(file, imageType);
 
-        return basicFilterService.addGrayscaleFilter(file, imageHelpersService.getExtension(imageType));
+        return commonImageFilterService.addGrayscaleFilter(file, imageHelpersService.getExtension(imageType));
 
     }
 
@@ -87,8 +91,29 @@ public class ImageFilterController {
 
         imageHelpersService.isFileValid(file, imageType);
 
-        return basicFilterService.addBlurFilter(file, imageHelpersService.getExtension(imageType));
+        return commonImageFilterService.addBlurFilter(file, imageHelpersService.getExtension(imageType));
 
     }
 
+
+    @PostMapping(path = "/unicolor", produces = {"image/png", "image/jpeg", "image/webp"})
+    public byte[] unicolorImageFilter(@RequestParam(name = "file") MultipartFile file,
+                                      @RequestParam(name = "value") UNICOLOR_FILTER_VALUES filterValue,
+                                      @RequestParam(name = "color") RGB_COLORS color) throws IOException {
+
+        String mimetype = imageHelpersService.getImageType(file);
+
+
+
+        imageHelpersService.isFileValid(file, mimetype);
+
+        byte[] bytesImage = basicImageFilterService.addUnicolorFilter(file,
+                imageHelpersService.getExtension(mimetype),
+                filterValue,
+                color
+        );
+
+
+        return bytesImage;
+    }
 }

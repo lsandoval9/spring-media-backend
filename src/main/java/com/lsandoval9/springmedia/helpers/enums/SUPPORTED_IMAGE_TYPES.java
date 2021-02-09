@@ -1,6 +1,6 @@
 package com.lsandoval9.springmedia.helpers.enums;
 
-public enum SupportedImageTypes {
+public enum SUPPORTED_IMAGE_TYPES {
 
     PNG("image/png"),
     WEBMP("image/webp"),
@@ -8,7 +8,7 @@ public enum SupportedImageTypes {
 
     private final String type;
 
-    SupportedImageTypes(String type) {
+    SUPPORTED_IMAGE_TYPES(String type) {
 
         this.type = type;
 

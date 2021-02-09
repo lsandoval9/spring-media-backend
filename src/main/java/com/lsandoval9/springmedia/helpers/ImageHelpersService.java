@@ -1,12 +1,12 @@
 package com.lsandoval9.springmedia.helpers;
 
-import com.lsandoval9.springmedia.helpers.enums.SupportedImageTypes;
+import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -56,7 +56,7 @@ public class ImageHelpersService {
 
         boolean match = false;
 
-        for (SupportedImageTypes type : SupportedImageTypes.values()) {
+        for (SUPPORTED_IMAGE_TYPES type : SUPPORTED_IMAGE_TYPES.values()) {
 
             if (Objects.equals(mimetype, type.getTypeName())) {
 
@@ -93,6 +93,12 @@ public class ImageHelpersService {
             throw new IllegalStateException("MIMETYPE NOT SUPPORTED");
 
         }
+
+    }
+
+    public BufferedImage getBufferedImage(MultipartFile file) throws IOException {
+
+        return ImageIO.read(file.getInputStream());
 
     }
 }

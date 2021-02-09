@@ -1,5 +1,7 @@
 package com.lsandoval9.springmedia.services;
 
+import com.lsandoval9.springmedia.helpers.ImageHelpersService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,24 +12,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Service
-public class BasicFilterService {
+public class CommonImageFilterService {
 
     ByteArrayOutputStream byteArrayOutput = null;
+
+    private final ImageHelpersService imageHelpersService;
+
+    @Autowired
+    public CommonImageFilterService(ImageHelpersService imageHelpersService) {
+        this.imageHelpersService = imageHelpersService;
+    }
 
 
     public byte[] addSepiaFilter(MultipartFile file, String type) throws IOException {
 
-        BufferedImage image = getBufferedImage(file);
+        BufferedImage image = imageHelpersService.getBufferedImage(file);
 
         Color color;
 
         this.byteArrayOutput = new ByteArrayOutputStream();
 
-        for (int i = 0; i < image.getWidth() - 1; ++i) {
+        for (int horizontal = 0; horizontal < image.getWidth() - 1; ++horizontal) {
 
-            for (int j = 0; j < image.getHeight() - 1; ++j) {
+            for (int vertical = 0; vertical < image.getHeight() - 1; ++vertical) {
 
-                color = new Color(image.getRGB(i, j), true);
+                color = new Color(image.getRGB(horizontal, vertical), true);
 
                 int sepiaRed = (int) Math.floor(
                         (0.393 * color.getRed())
@@ -55,7 +64,7 @@ public class BasicFilterService {
 
                 color = new Color(sepiaRed, sepiaGreen, sepiaBlue, color.getAlpha());
 
-                image.setRGB(i, j, color.getRGB());
+                image.setRGB(horizontal, vertical, color.getRGB());
 
             }
 
@@ -70,7 +79,7 @@ public class BasicFilterService {
 
     public byte[] addReflectFilter(MultipartFile file, String type) throws IOException {
 
-        BufferedImage image = getBufferedImage(file);
+        BufferedImage image = imageHelpersService.getBufferedImage(file);
 
         this.byteArrayOutput = new ByteArrayOutputStream();
 
@@ -78,21 +87,24 @@ public class BasicFilterService {
 
         Color color;
 
-        for (int i = 0; i < (Math.round((float) image.getWidth() - 1) / 2); ++i) {
+        for (int horizontal = 0; horizontal < (Math.round((float) image.getWidth() - 1) / 2); ++horizontal) {
 
-            for (int j = 0; j < image.getHeight() - 1; ++j) {
+            for (int vertical = 0; vertical < image.getHeight() - 1; ++vertical) {
 
 
-                aux = image.getRGB(image.getWidth() - i - 1, j);
+                aux = image.getRGB(image.getWidth() - horizontal - 1, vertical);
 
                 color = new Color(aux, true);
 
-                image.setRGB(((image.getWidth() - 1) - i), j, image.getRGB(i, j));
+                image.setRGB(
+                        ((image.getWidth() - 1) - horizontal),
+                        vertical,
+                        image.getRGB(horizontal, vertical)
+                );
 
-                image.setRGB(i, j, color.getRGB());
+                image.setRGB(horizontal, vertical, color.getRGB());
             }
         }
-
 
 
         ImageIO.write(image, type, byteArrayOutput);
@@ -107,15 +119,15 @@ public class BasicFilterService {
 
         Color color;
 
-        BufferedImage image = getBufferedImage(file);
+        BufferedImage image = imageHelpersService.getBufferedImage(file);
 
         this.byteArrayOutput = new ByteArrayOutputStream();
 
-        for (int i = 0; i < image.getWidth() - 1; i++) {
+        for (int horizontal = 0; horizontal < image.getWidth() - 1; horizontal++) {
 
-            for (int j = 0; j < image.getHeight() - 1; j++) {
+            for (int vertical = 0; vertical < image.getHeight() - 1; vertical++) {
 
-                color = new Color(image.getRGB(i, j), true);
+                color = new Color(image.getRGB(horizontal, vertical), true);
 
                 int prom = Math.round(
                         (float) (
@@ -126,7 +138,7 @@ public class BasicFilterService {
 
                 color = new Color(prom, prom, prom, color.getAlpha());
 
-                image.setRGB(i, j, color.getRGB());
+                image.setRGB(horizontal, vertical, color.getRGB());
 
             }
         }
@@ -141,7 +153,7 @@ public class BasicFilterService {
 
     public byte[] addBlurFilter(MultipartFile file, String type) throws IOException {
 
-        BufferedImage image = getBufferedImage(file);
+        BufferedImage image = imageHelpersService.getBufferedImage(file);
 
         this.byteArrayOutput = new ByteArrayOutputStream();
 
@@ -152,13 +164,12 @@ public class BasicFilterService {
         Color color;
 
 
+        for (int horizontal = 0; horizontal < image.getWidth(); ++horizontal) {
 
-        for (int i = 0; i < image.getWidth(); i++) {
-
-            for (int j = 0; j < image.getHeight(); j++) {
+            for (int vertical = 0; vertical < image.getHeight(); ++vertical) {
 
 
-                color = new Color(image.getRGB(i, j), true);
+                color = new Color(image.getRGB(horizontal, vertical), true);
 
 
                 red = color.getRed();
@@ -171,9 +182,9 @@ public class BasicFilterService {
 
                 totalSquares = 1;
 
-                if (j != 0) { //LOOK UP
+                if (vertical != 0) { //LOOK UP
 
-                    color = new Color(image.getRGB(i, j - 1), true);
+                    color = new Color(image.getRGB(horizontal, vertical - 1), true);
 
                     red += color.getRed();
 
@@ -183,10 +194,10 @@ public class BasicFilterService {
 
                     totalSquares++;
 
-                    if (i != image.getWidth() - 1)  //LOOK UP - RIGHT
+                    if (horizontal != image.getWidth() - 1)  //LOOK UP - RIGHT
                     {
 
-                        color = new Color(image.getRGB(i + 1, j - 1), true);
+                        color = new Color(image.getRGB(horizontal + 1, vertical - 1), true);
 
                         red += color.getRed();
 
@@ -197,9 +208,9 @@ public class BasicFilterService {
                         totalSquares++;
                     }
 
-                    if (i != 0) // LOOK UP - LEFT
+                    if (horizontal != 0) // LOOK UP - LEFT
                     {
-                        color = new Color(image.getRGB(i - 1, j - 1), true);
+                        color = new Color(image.getRGB(horizontal - 1, vertical - 1), true);
 
                         red += color.getRed();
 
@@ -212,22 +223,9 @@ public class BasicFilterService {
                 }
 
 
-                if (i != image.getWidth() - 1) { // LOOK TO THE RIGHT
+                if (horizontal != image.getWidth() - 1) { // LOOK TO THE RIGHT
 
-                    color = new Color(image.getRGB(i + 1, j), true);
-
-                    red += color.getRed();
-
-                    blue += color.getBlue();
-
-                    green += color.getGreen();
-
-                    totalSquares++;
-                }
-
-                if (i != 0) { //LOOK TO THE LEFT
-
-                    color = new Color(image.getRGB(i - 1, j), true);
+                    color = new Color(image.getRGB(horizontal + 1, vertical), true);
 
                     red += color.getRed();
 
@@ -238,9 +236,22 @@ public class BasicFilterService {
                     totalSquares++;
                 }
 
-                if (j != (image.getHeight() - 1)) { //LOOK DOWN
+                if (horizontal != 0) { //LOOK TO THE LEFT
 
-                    color = new Color(image.getRGB(i, j + 1), true);
+                    color = new Color(image.getRGB(horizontal - 1, vertical), true);
+
+                    red += color.getRed();
+
+                    blue += color.getBlue();
+
+                    green += color.getGreen();
+
+                    totalSquares++;
+                }
+
+                if (vertical != (image.getHeight() - 1)) { //LOOK DOWN
+
+                    color = new Color(image.getRGB(horizontal, vertical + 1), true);
 
                     red += color.getRed();
 
@@ -250,9 +261,9 @@ public class BasicFilterService {
 
                     totalSquares++;
 
-                    if (i != image.getWidth() - 1) //LOOK DOWN - RIGHT
+                    if (horizontal != image.getWidth() - 1) //LOOK DOWN - RIGHT
                     {
-                        color = new Color(image.getRGB(i + 1, j + 1), true);
+                        color = new Color(image.getRGB(horizontal + 1, vertical + 1), true);
 
                         red += color.getRed();
 
@@ -263,9 +274,9 @@ public class BasicFilterService {
                         totalSquares++;
                     }
 
-                    if (i != 0) //LOOK DOWN - LEFT
+                    if (horizontal != 0) //LOOK DOWN - LEFT
                     {
-                        color = new Color(image.getRGB(i - 1, j + 1), true);
+                        color = new Color(image.getRGB(horizontal - 1, vertical + 1), true);
 
                         red += color.getRed();
 
@@ -284,7 +295,7 @@ public class BasicFilterService {
                         (Math.round((float) blue / totalSquares)),
                         alpha);
 
-                image.setRGB(i, j, color.getRGB());
+                image.setRGB(horizontal, vertical, color.getRGB());
             }
         }
 
@@ -293,13 +304,5 @@ public class BasicFilterService {
         return byteArrayOutput.toByteArray();
 
     }
-
-
-    public BufferedImage getBufferedImage(MultipartFile file) throws IOException {
-
-        return ImageIO.read(file.getInputStream());
-
-    }
-
 
 }
