@@ -2,7 +2,8 @@ package com.lsandoval9.springmedia.controllers.imageprocessing;
 
 import com.lsandoval9.springmedia.helpers.ImageHelpersService;
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
-import com.lsandoval9.springmedia.helpers.enums.UNICOLOR_FILTER_VALUES;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.ENHANCE_IMAGE_VALUE;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
 import com.lsandoval9.springmedia.services.CommonImageFilterService;
 import com.lsandoval9.springmedia.services.BasicImageFilterService;
 import org.slf4j.Logger;
@@ -104,13 +105,64 @@ public class ImageFilterController {
         String mimetype = imageHelpersService.getImageType(file);
 
 
-
         imageHelpersService.isFileValid(file, mimetype);
 
         byte[] bytesImage = basicImageFilterService.addUnicolorFilter(file,
                 imageHelpersService.getExtension(mimetype),
                 filterValue,
                 color
+        );
+
+
+        return bytesImage;
+    }
+
+    @PostMapping(path = "/brightness", produces = {"image/png", "image/jpeg", "image/webp"})
+    public byte[] brightness(@RequestParam(name = "file") MultipartFile file) throws IOException {
+
+        String mimetype = imageHelpersService.getImageType(file);
+
+
+        imageHelpersService.isFileValid(file, mimetype);
+
+        byte[] bytesImage = basicImageFilterService.brightness(file,
+                imageHelpersService.getExtension(mimetype)
+        );
+
+
+        return bytesImage;
+    }
+
+
+    @PostMapping(path = "/negative", produces = {"image/png", "image/jpeg", "image/webp"})
+    public byte[] hue(@RequestParam(name = "file") MultipartFile file) throws IOException {
+
+        String mimetype = imageHelpersService.getImageType(file);
+
+
+        imageHelpersService.isFileValid(file, mimetype);
+
+        byte[] bytesImage = commonImageFilterService.negative(file,
+                imageHelpersService.getExtension(mimetype)
+        );
+
+
+        return bytesImage;
+    }
+
+
+    @PostMapping(path = "/saturation", produces = {"image/png", "image/jpeg", "image/webp"})
+    public byte[] saturation(@RequestParam(name = "file") MultipartFile file,
+                             @RequestParam(name = "value") ENHANCE_IMAGE_VALUE value) throws IOException {
+
+        String mimetype = imageHelpersService.getImageType(file);
+
+
+        imageHelpersService.isFileValid(file, mimetype);
+
+        byte[] bytesImage = basicImageFilterService.saturation(file,
+                imageHelpersService.getExtension(mimetype),
+                value
         );
 
 

@@ -1,4 +1,4 @@
-package com.lsandoval9.springmedia.helpers.enums;
+package com.lsandoval9.springmedia.helpers.enums.basicImageFilters;
 
 public enum UNICOLOR_FILTER_VALUES {
 

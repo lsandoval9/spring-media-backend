@@ -305,4 +305,44 @@ public class CommonImageFilterService {
 
     }
 
+
+    public byte[] negative(MultipartFile file, String type) throws IOException {
+
+        BufferedImage image = imageHelpersService.getBufferedImage(file);
+
+        this.byteArrayOutput = new ByteArrayOutputStream();
+
+        int red, green, blue, alpha;
+
+        Color color;
+
+        for (int horizontal = 0; horizontal < image.getWidth(); ++horizontal) {
+
+            for (int vertical = 0; vertical < image.getHeight(); ++vertical) {
+
+                color = new Color(image.getRGB(horizontal, vertical), true);
+
+                red = 255 - color.getRed();
+
+                green = 255 - color.getGreen();
+
+                blue = 255 - color.getBlue();
+
+                color = new Color(red, green, blue, color.getAlpha());
+
+                image.setRGB(horizontal, vertical, color.getRGB());
+
+
+            }
+        }
+
+
+        ImageIO.write(image, type, byteArrayOutput);
+
+        return byteArrayOutput.toByteArray();
+    }
+
+
+
+
 }

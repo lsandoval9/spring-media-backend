@@ -1,7 +1,7 @@
 package com.lsandoval9.springmedia.dto;
 
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
-import com.lsandoval9.springmedia.helpers.enums.UNICOLOR_FILTER_VALUES;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
