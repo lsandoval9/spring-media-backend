@@ -2,7 +2,6 @@ package com.lsandoval9.springmedia.services.image;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -26,21 +25,27 @@ public class AsciiImageFilterService {
     public AsciiImageFilterService(ImageHelpersService imageHelpersService) {
 
         this.imageHelpersService = imageHelpersService;
-        ;
+
     }
 
 
     public byte[] convertToAsciiImage(final BufferedImage image, boolean negative,
                                       String extension) throws IOException {
 
+        BufferedImage newImage = imageHelpersService.resizeImage(image);
 
-        StringBuilder sb = parseToStringBuilder(image, negative);
+        /*ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        ImageIO.write(newImage, extension, output);
+
+        return output.toByteArray();*/
+
+        StringBuilder sb = parseToStringBuilder(newImage, negative);
 
         String[] text = sb.toString().split("\n");
 
-
-        byte[] bytes = drawString(text, image.getWidth(), image.getHeight(),
-                "png", true);
+        byte[] bytes = drawString(text, newImage.getWidth(), newImage.getHeight(),
+                "png");
 
         return bytes;
 
@@ -61,9 +66,12 @@ public class AsciiImageFilterService {
 
     public StringBuilder parseToStringBuilder(BufferedImage image, boolean negative) {
 
+
         int width = image.getWidth();
         int height = image.getHeight();
         byte[] bytes = new byte[0];
+
+
         StringBuilder sb = new StringBuilder((width + 1) * height);
 
         for (int y = 0; y < height; y++) {
@@ -74,7 +82,7 @@ public class AsciiImageFilterService {
 
                 Color pixelColor = new Color(image.getRGB(x, y));
                 double gValue = (double) pixelColor.getRed() * 0.2989 + (double) pixelColor.getBlue() * 0.5870 + (double) pixelColor.getGreen() * 0.1140;
-                final char s = negative ? returnStrNeg(gValue) : returnStrPos(gValue);
+                final char s = negative ? returnStrPos(gValue) : returnStrNeg(gValue);
                 sb.append(s);
 
             }
@@ -86,20 +94,18 @@ public class AsciiImageFilterService {
 
 
     private byte[] drawString(String[] text, int width,
-                              int height, String extension, boolean asText) throws IOException {
+                              int height, String extension) throws IOException {
 
         this.byteArrayOutput = new ByteArrayOutputStream();
-
-        ImageOutputStream outputStream = new MemoryCacheImageOutputStream(byteArrayOutput);
 
         int y = 0;
         Font font = new Font("Monospaced", Font.PLAIN, 10);
 
 
-        BufferedImage bufferedImage = new BufferedImage(width * 6, height * 7,
+        BufferedImage image = new BufferedImage(width * 6, height * 7,
                 BufferedImage.TYPE_USHORT_555_RGB);
 
-        Graphics2D graphics = bufferedImage.createGraphics();
+        Graphics2D graphics = image.createGraphics();
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, width, height);
         graphics.setFont(font);
@@ -111,7 +117,8 @@ public class AsciiImageFilterService {
             y += graphics.getFontMetrics().getHeight() - 6;
         }
 
-        ImageIO.write(bufferedImage, extension, byteArrayOutput);
+
+        ImageIO.write(image, extension, byteArrayOutput);
 
         return byteArrayOutput.toByteArray();
 
@@ -175,39 +182,5 @@ public class AsciiImageFilterService {
         return str;
 
     }
-
-
-    public byte[] getImageAsJpg(ByteArrayOutputStream output, BufferedImage image) throws IOException {
-
-
-        try (ImageOutputStream outputStream = ImageIO.createImageOutputStream(output)) {
-
-            // NOTE: The rest of the code is just a cleaned up version of your code
-
-            // Obtain writer for JPEG format
-            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("JPEG").next();
-
-            // Configure JPEG compression: 70% quality
-            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
-            jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            jpgWriteParam.setCompressionQuality(0.1f);
-
-            // Set your in-memory stream as the output
-            jpgWriter.setOutput(outputStream);
-
-            // Write image as JPEG w/configured settings to the in-memory stream
-            // (the IIOImage is just an aggregator object, allowing you to associate
-            // thumbnails and metadata to the image, it "does" nothing)
-            jpgWriter.write(null, new IIOImage(image, null, null), jpgWriteParam);
-
-            // Dispose the writer to free resources
-            jpgWriter.dispose();
-        }
-
-        byte[] jpegData = output.toByteArray();
-
-        return jpegData;
-    }
-
 
 }

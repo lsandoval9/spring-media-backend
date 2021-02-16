@@ -3,12 +3,16 @@ package com.lsandoval9.springmedia.services.image;
 import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
 import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import com.lsandoval9.springmedia.services.file.FileService;
+import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
+import net.coobird.thumbnailator.resizers.DefaultResizerFactory;
+import net.coobird.thumbnailator.resizers.Resizer;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -83,14 +87,13 @@ public class ImageHelpersService {
 
     }
 
+
     /**
-     * @param file image as a multipartfile
+     * @param file      image as a multipartfile
      * @param imageType String containing the mimetype of the image
      * @return boolean if the image is valid and not null
-     *
-     * */
+     */
     public boolean isFileValid(MultipartFile file, String imageType) {
-
 
 
         if (file.isEmpty()) {
@@ -110,11 +113,13 @@ public class ImageHelpersService {
 
     }
 
+
     public BufferedImage getBufferedImage(MultipartFile file) throws IOException {
 
         return ImageIO.read(file.getInputStream());
 
     }
+
 
     public int checkColorRange(int rgbColor) {
 
@@ -124,6 +129,49 @@ public class ImageHelpersService {
         }
 
         return Math.max(rgbColor, 0);
+
+    }
+
+
+    /**
+     *
+     *
+     * @param image - image to be resized with certain ratio
+     * @return resized image
+     */
+    public BufferedImage resizeImage(BufferedImage image) {
+
+        int newWidth = image.getWidth();
+        int newHeight = image.getHeight();
+
+        int ratio = 850;
+
+        while (newWidth > ratio || newHeight > ratio) {
+
+            if (newWidth > ratio) {
+
+                newWidth = newWidth - 100;
+
+            }
+
+            if (newHeight > ratio) {
+
+                newHeight = newHeight - 100;
+
+            }
+
+        }
+
+        Resizer resizer = DefaultResizerFactory.getInstance().getResizer(
+                new Dimension(image.getWidth(), image.getHeight()),
+                new Dimension(newWidth, newHeight));
+        BufferedImage scaledImage = new FixedSizeThumbnailMaker(
+                newWidth, newHeight, true, true
+        )
+                .resizer(resizer)
+                .make(image);
+
+        return scaledImage;
 
     }
 }
