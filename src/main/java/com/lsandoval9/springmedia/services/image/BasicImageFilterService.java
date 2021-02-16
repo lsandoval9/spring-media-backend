@@ -1,8 +1,8 @@
-package com.lsandoval9.springmedia.services;
+package com.lsandoval9.springmedia.services.image;
 
-import com.lsandoval9.springmedia.helpers.ImageHelpersService;
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
-import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.ENHANCE_IMAGE_VALUE;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.BRIGHTNESS_IMAGE_VALUES;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.SATURATION_IMAGE_VALUES;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class BasicImageFilterService {
 
                     red = color.getRed() + (int) (((double) selectedValue / 100) * color.getRed());
 
-                    if (red > 255) red = 255;
+                    red = imageHelpersService.checkColorRange(red);
 
                     color = new Color(
                             red,
@@ -72,7 +72,7 @@ public class BasicImageFilterService {
 
                     blue = color.getBlue() + (int) (((double) selectedValue / 100) * color.getBlue());
 
-                    if (blue > 255) blue = 255;
+                    blue = imageHelpersService.checkColorRange(blue);
 
                     color = new Color(
                             color.getRed(),
@@ -86,7 +86,7 @@ public class BasicImageFilterService {
 
                     green = color.getGreen() + (int) (((double) selectedValue / 100) * color.getGreen());
 
-                    if (green > 255) green = 255;
+                    green = imageHelpersService.checkColorRange(green);
 
                     color = new Color(
                             color.getRed(),
@@ -110,7 +110,8 @@ public class BasicImageFilterService {
     }
 
 
-    public byte[] brightness(MultipartFile file, String type) throws IOException {
+    public byte[] brightness(MultipartFile file, String type,
+                             BRIGHTNESS_IMAGE_VALUES selectedValue) throws IOException {
 
         this.byteArrayOutput = new ByteArrayOutputStream();
 
@@ -118,12 +119,12 @@ public class BasicImageFilterService {
 
         Color color = null;
 
+        double value = selectedValue.getPorcenteage();
+
         int red = 0,
                 green = 0,
                 blue = 0,
-                min = 0,
-                max = 0,
-                delta = 0;
+                result = 0;
 
         for (int horizontal = 0; horizontal < image.getWidth(); ++horizontal) {
 
@@ -132,32 +133,14 @@ public class BasicImageFilterService {
 
                 color = new Color(image.getRGB(horizontal, vertical), true);
 
+                red = (int) (color.getRed() + Math.round(value * color.getRed()));
+                red = imageHelpersService.checkColorRange(red);
 
-                max = Math.max(
-                        color.getRed(),
-                        Math.max(
-                                color.getBlue(),
-                                color.getGreen()
-                        ));
+                green = (int) (color.getGreen() + Math.round(value * color.getGreen()));
+                green = imageHelpersService.checkColorRange(green);
 
-                min = Math.min(
-                        color.getRed(),
-                        Math.max(
-                                color.getBlue(),
-                                color.getGreen()
-                        ));
-
-
-                delta = max - min;
-
-                red = color.getRed() + delta;
-                if (red > 255) red = 255;
-
-                blue = color.getBlue() + delta;
-                if (blue > 255) blue = 255;
-
-                green = color.getGreen() + delta;
-                if (green > 255) green = 255;
+                blue = (int) (color.getBlue() + Math.round(value * color.getBlue()));
+                blue = imageHelpersService.checkColorRange(blue);
 
                 color = new Color(
                         red,
@@ -177,49 +160,8 @@ public class BasicImageFilterService {
     }
 
 
-    public byte[] hue(MultipartFile file, String type) throws IOException {
-
-        this.byteArrayOutput = new ByteArrayOutputStream();
-
-        BufferedImage image = imageHelpersService.getBufferedImage(file);
-
-        Color color = null;
-
-        int red, green, blue, prom;
-
-        for (int horizontal = 0; horizontal < image.getWidth(); ++horizontal) {
-
-            for (int vertical = 0; vertical < image.getHeight(); ++vertical) {
-
-
-                color = new Color(image.getRGB(horizontal, vertical), true);
-
-                prom = (int) Math.round((double) (color.getRed() + color.getGreen() + color.getBlue()) / 3);
-
-                red = color.getRed() - prom;
-                if (red < 0) red = 0;
-
-                green = color.getGreen() - prom;
-                if (green < 0) green = 0;
-
-                blue = color.getBlue() - prom;
-                if (blue < 0) blue = 0;
-
-
-                color = new Color(red, blue, green, color.getAlpha());
-
-                image.setRGB(horizontal, vertical, color.getRGB());
-            }
-        }
-
-        ImageIO.write(image, type, byteArrayOutput);
-
-        return byteArrayOutput.toByteArray();
-    }
-
-
     public byte[] saturation(MultipartFile file, String type,
-                             ENHANCE_IMAGE_VALUE value) throws IOException {
+                             SATURATION_IMAGE_VALUES value) throws IOException {
 
         BufferedImage image = imageHelpersService.getBufferedImage(file);
 
@@ -258,16 +200,13 @@ public class BasicImageFilterService {
                 );
 
                 resultRed = (int) (result + ((red) - result) * value.getValue());
-                if (resultRed > 255) resultRed = 255;
-                else if (resultRed < 0) resultRed = 0;
+                resultRed = imageHelpersService.checkColorRange(resultRed);
 
                 resultGreen = (int) (result + ((green) - result) * value.getValue());
-                if (resultGreen > 255) resultGreen = 255;
-                else if (resultGreen < 0) resultGreen = 0;
+                resultGreen = imageHelpersService.checkColorRange(resultGreen);
 
                 resultBlue = (int) (result + ((blue) - result) * value.getValue());
-                if (resultBlue > 255) resultBlue = 255;
-                else if (resultBlue < 0) resultBlue = 0;
+                resultBlue = imageHelpersService.checkColorRange(resultBlue);
 
 
                 color = new Color(resultRed, resultGreen, resultBlue, color.getAlpha());

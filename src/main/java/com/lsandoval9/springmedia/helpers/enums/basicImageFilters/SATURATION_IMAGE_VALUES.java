@@ -1,6 +1,6 @@
 package com.lsandoval9.springmedia.helpers.enums.basicImageFilters;
 
-public enum ENHANCE_IMAGE_VALUE {
+public enum SATURATION_IMAGE_VALUES {
 
     LIGHT(1.2),
     MEDIUM(1.5),
@@ -8,7 +8,7 @@ public enum ENHANCE_IMAGE_VALUE {
 
     private final double value;
 
-    ENHANCE_IMAGE_VALUE(double value) {
+    SATURATION_IMAGE_VALUES(double value) {
         this.value = value;
     }
 

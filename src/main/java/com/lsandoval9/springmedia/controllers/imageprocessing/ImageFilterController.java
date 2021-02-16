@@ -1,11 +1,12 @@
 package com.lsandoval9.springmedia.controllers.imageprocessing;
 
-import com.lsandoval9.springmedia.helpers.ImageHelpersService;
+import com.lsandoval9.springmedia.services.image.ImageHelpersService;
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
-import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.ENHANCE_IMAGE_VALUE;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.BRIGHTNESS_IMAGE_VALUES;
+import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.SATURATION_IMAGE_VALUES;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
-import com.lsandoval9.springmedia.services.CommonImageFilterService;
-import com.lsandoval9.springmedia.services.BasicImageFilterService;
+import com.lsandoval9.springmedia.services.image.CommonImageFilterService;
+import com.lsandoval9.springmedia.services.image.BasicImageFilterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(path = "/f")
+@RequestMapping(path = "/im")
 public class ImageFilterController {
 
     @Value("${user.rootfolder}")
@@ -63,8 +64,6 @@ public class ImageFilterController {
     public byte[] addReflectFilter(@RequestBody MultipartFile file) throws IOException {
 
         String imageType = imageHelpersService.getImageType(file);
-
-        log.error(imageType);
 
         imageHelpersService.isFileValid(file, imageType);
 
@@ -118,7 +117,8 @@ public class ImageFilterController {
     }
 
     @PostMapping(path = "/brightness", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] brightness(@RequestParam(name = "file") MultipartFile file) throws IOException {
+    public byte[] brightness(@RequestParam(name = "file") MultipartFile file,
+                             @RequestParam(name = "value") BRIGHTNESS_IMAGE_VALUES selectedValue) throws IOException {
 
         String mimetype = imageHelpersService.getImageType(file);
 
@@ -126,7 +126,8 @@ public class ImageFilterController {
         imageHelpersService.isFileValid(file, mimetype);
 
         byte[] bytesImage = basicImageFilterService.brightness(file,
-                imageHelpersService.getExtension(mimetype)
+                imageHelpersService.getExtension(mimetype),
+                selectedValue
         );
 
 
@@ -153,7 +154,7 @@ public class ImageFilterController {
 
     @PostMapping(path = "/saturation", produces = {"image/png", "image/jpeg", "image/webp"})
     public byte[] saturation(@RequestParam(name = "file") MultipartFile file,
-                             @RequestParam(name = "value") ENHANCE_IMAGE_VALUE value) throws IOException {
+                             @RequestParam(name = "value") SATURATION_IMAGE_VALUES value) throws IOException {
 
         String mimetype = imageHelpersService.getImageType(file);
 

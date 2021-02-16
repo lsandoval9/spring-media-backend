@@ -1,6 +1,8 @@
-package com.lsandoval9.springmedia.helpers;
+package com.lsandoval9.springmedia.services.image;
 
+import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
 import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
+import com.lsandoval9.springmedia.services.file.FileService;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,12 @@ public class ImageHelpersService {
 
     private final Tika tika;
 
+    private final FileService fileService;
+
     @Autowired
-    public ImageHelpersService(Tika tika) {
+    public ImageHelpersService(Tika tika, FileService fileService) {
         this.tika = tika;
+        this.fileService = fileService;
     }
 
     @Deprecated
@@ -52,7 +57,7 @@ public class ImageHelpersService {
 
     }
 
-    public boolean isSupportedMimeType(String mimetype) {
+    private boolean isSupportedMimeType(String mimetype) {
 
         boolean match = false;
 
@@ -78,27 +83,47 @@ public class ImageHelpersService {
 
     }
 
+    /**
+     * @param file image as a multipartfile
+     * @param imageType String containing the mimetype of the image
+     * @return boolean if the image is valid and not null
+     *
+     * */
+    public boolean isFileValid(MultipartFile file, String imageType) {
 
-    public void isFileValid(MultipartFile file, String imageType) {
+
 
         if (file.isEmpty()) {
 
-            throw new IllegalStateException("FILE IS EMPTY");
+            return false;
 
         }
 
         if (!isSupportedMimeType(imageType)) {
 
 
-            throw new IllegalStateException("MIMETYPE NOT SUPPORTED");
+            return false;
 
         }
+
+        return true;
 
     }
 
     public BufferedImage getBufferedImage(MultipartFile file) throws IOException {
 
         return ImageIO.read(file.getInputStream());
+
+    }
+
+    public int checkColorRange(int rgbColor) {
+
+        if (rgbColor > 255) {
+
+            return 255;
+        }
+
+        return Math.max(rgbColor, 0);
 
     }
 }

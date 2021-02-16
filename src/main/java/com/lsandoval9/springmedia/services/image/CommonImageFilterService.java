@@ -1,6 +1,5 @@
-package com.lsandoval9.springmedia.services;
+package com.lsandoval9.springmedia.services.image;
 
-import com.lsandoval9.springmedia.helpers.ImageHelpersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
