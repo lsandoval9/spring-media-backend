@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.lsandoval9</groupId>
     <artifactId>spring-media</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>spring-media</name>
-    <description>Demo project for Spring Boot</description>
+    <description>A Spring app to apply filters to images and detect mimetype</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -36,6 +36,13 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
+
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
@@ -74,6 +81,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <finalName>spring-media</finalName>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

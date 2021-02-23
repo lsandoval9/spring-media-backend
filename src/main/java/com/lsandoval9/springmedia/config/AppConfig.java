@@ -12,7 +12,7 @@ public class AppConfig {
     public CommonsMultipartResolver multipartResolver() {
 
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(-1/*10_000_000*/);
+        multipartResolver.setMaxUploadSize(10_485_760);
         return multipartResolver;
     }
 

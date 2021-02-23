@@ -3,12 +3,8 @@ package com.lsandoval9.springmedia.services.image;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.IIOImage;
+
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.stream.MemoryCacheImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +41,7 @@ public class AsciiImageFilterService {
         String[] text = sb.toString().split("\n");
 
         byte[] bytes = drawString(text, newImage.getWidth(), newImage.getHeight(),
-                "png");
+                "jpeg");
 
         return bytes;
 

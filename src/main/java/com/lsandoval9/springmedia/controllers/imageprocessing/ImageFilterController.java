@@ -21,9 +21,6 @@ import java.io.IOException;
 @RequestMapping(path = "/im")
 public class ImageFilterController {
 
-    @Value("${user.rootfolder}")
-    private String rootfolder;
-
     private final Logger log;
 
     private final ImageHelpersService imageHelpersService;

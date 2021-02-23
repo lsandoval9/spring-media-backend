@@ -1,6 +1,5 @@
 package com.lsandoval9.springmedia.services.image;
 
-import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
 import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import com.lsandoval9.springmedia.services.file.FileService;
 import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
@@ -71,6 +70,7 @@ public class ImageHelpersService {
 
                 match = true;
 
+                break;
             }
 
         }
@@ -102,14 +102,7 @@ public class ImageHelpersService {
 
         }
 
-        if (!isSupportedMimeType(imageType)) {
-
-
-            return false;
-
-        }
-
-        return true;
+        return isSupportedMimeType(imageType);
 
     }
 
@@ -134,10 +127,9 @@ public class ImageHelpersService {
 
 
     /**
-     *
-     *
      * @param image - image to be resized with certain ratio
      * @return resized image
+     * @author - lsandoval9
      */
     public BufferedImage resizeImage(BufferedImage image) {
 
