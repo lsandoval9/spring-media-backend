@@ -1,5 +1,6 @@
 package com.lsandoval9.springmedia.services.file;
 
+import com.lsandoval9.springmedia.exceptions.EmptyFileException;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
@@ -31,6 +32,18 @@ public class FileService {
 
         return tika.detect(file.getBytes());
 
+    }
+
+
+    public boolean isValidFile(MultipartFile file) {
+
+        if (file.isEmpty()) {
+
+            throw new EmptyFileException("please provide a non empty file");
+
+        }
+
+        return true;
     }
 
 

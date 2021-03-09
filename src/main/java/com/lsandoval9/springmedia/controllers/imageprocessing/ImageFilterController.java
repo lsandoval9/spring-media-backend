@@ -1,5 +1,6 @@
 package com.lsandoval9.springmedia.controllers.imageprocessing;
 
+import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
 import com.lsandoval9.springmedia.services.image.ImageHelpersService;
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.BRIGHTNESS_IMAGE_VALUES;
@@ -7,11 +8,11 @@ import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.SATURATION_IMA
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
 import com.lsandoval9.springmedia.services.image.CommonImageFilterService;
 import com.lsandoval9.springmedia.services.image.BasicImageFilterService;
+import org.apache.tika.mime.MimeTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,126 +45,150 @@ public class ImageFilterController {
     // FILTERS
 
     @PostMapping(value = "/sepia", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] addSepiaFilter(@RequestBody MultipartFile file) throws IOException {
+    public byte[] addSepiaFilter(@RequestBody MultipartFile file) throws IOException, MimeTypeException {
 
-        String imageType = imageHelpersService.getImageType(file);
 
-        log.error(imageType);
+        if (imageHelpersService.isImageValid(file)) {
+            String imageType = imageHelpersService.getImageType(file);
 
-        imageHelpersService.isFileValid(file, imageType);
+            return commonImageFilterService.addSepiaFilter(file, imageHelpersService.getExtension(imageType));
+        }
 
-        return commonImageFilterService.addSepiaFilter(file, imageHelpersService.getExtension(imageType));
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
 
     }
 
 
     @PostMapping(path = "/reflect", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] addReflectFilter(@RequestBody MultipartFile file) throws IOException {
+    public byte[] addReflectFilter(@RequestBody MultipartFile file) throws IOException, MimeTypeException {
 
-        String imageType = imageHelpersService.getImageType(file);
 
-        imageHelpersService.isFileValid(file, imageType);
+        if (imageHelpersService.isImageValid(file)) {
 
-        return commonImageFilterService.addReflectFilter(file, imageHelpersService.getExtension(imageType));
+            String imageType = imageHelpersService.getImageType(file);
 
+            return commonImageFilterService.addReflectFilter(file, imageHelpersService.getExtension(imageType));
+        }
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 
 
     @PostMapping(path = "/grayscale", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] addGrayscaleFilter(@RequestBody MultipartFile file) throws IOException {
+    public byte[] addGrayscaleFilter(@RequestBody MultipartFile file) throws IOException, MimeTypeException {
 
-        String imageType = imageHelpersService.getImageType(file);
 
-        imageHelpersService.isFileValid(file, imageType);
+        if (imageHelpersService.isImageValid(file)) {
 
-        return commonImageFilterService.addGrayscaleFilter(file, imageHelpersService.getExtension(imageType));
+            String imageType = imageHelpersService.getImageType(file);
+
+            return commonImageFilterService.addGrayscaleFilter(file, imageHelpersService.getExtension(imageType));
+        }
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
+
 
     }
 
 
     @PostMapping(path = "/blur", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] addBlurFilter(@RequestBody MultipartFile file) throws IOException {
+    public byte[] addBlurFilter(@RequestBody MultipartFile file) throws IOException, MimeTypeException {
 
-        String imageType = imageHelpersService.getImageType(file);
 
-        imageHelpersService.isFileValid(file, imageType);
+        if (imageHelpersService.isImageValid(file)) {
 
-        return commonImageFilterService.addBlurFilter(file, imageHelpersService.getExtension(imageType));
+            String imageType = imageHelpersService.getImageType(file);
 
+            return commonImageFilterService.addBlurFilter(file, imageHelpersService.getExtension(imageType));
+        }
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 
 
     @PostMapping(path = "/unicolor", produces = {"image/png", "image/jpeg", "image/webp"})
     public byte[] unicolorImageFilter(@RequestParam(name = "file") MultipartFile file,
                                       @RequestParam(name = "value") UNICOLOR_FILTER_VALUES filterValue,
-                                      @RequestParam(name = "color") RGB_COLORS color) throws IOException {
-
-        String mimetype = imageHelpersService.getImageType(file);
+                                      @RequestParam(name = "color") RGB_COLORS color) throws IOException, MimeTypeException {
 
 
-        imageHelpersService.isFileValid(file, mimetype);
+        if (imageHelpersService.isImageValid(file)) {
 
-        byte[] bytesImage = basicImageFilterService.addUnicolorFilter(file,
-                imageHelpersService.getExtension(mimetype),
-                filterValue,
-                color
-        );
+            String mimetype = imageHelpersService.getImageType(file);
+
+            byte[] bytesImage = basicImageFilterService.addUnicolorFilter(file,
+                    imageHelpersService.getExtension(mimetype),
+                    filterValue,
+                    color
+            );
 
 
-        return bytesImage;
+            return bytesImage;
+
+        }
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 
     @PostMapping(path = "/brightness", produces = {"image/png", "image/jpeg", "image/webp"})
     public byte[] brightness(@RequestParam(name = "file") MultipartFile file,
-                             @RequestParam(name = "value") BRIGHTNESS_IMAGE_VALUES selectedValue) throws IOException {
-
-        String mimetype = imageHelpersService.getImageType(file);
+                             @RequestParam(name = "value") BRIGHTNESS_IMAGE_VALUES selectedValue) throws IOException, MimeTypeException {
 
 
-        imageHelpersService.isFileValid(file, mimetype);
+        if (imageHelpersService.isImageValid(file)) {
+            String mimetype = imageHelpersService.getImageType(file);
 
-        byte[] bytesImage = basicImageFilterService.brightness(file,
-                imageHelpersService.getExtension(mimetype),
-                selectedValue
-        );
+            byte[] bytesImage = basicImageFilterService.brightness(file,
+                    imageHelpersService.getExtension(mimetype),
+                    selectedValue
+            );
 
 
-        return bytesImage;
+            return bytesImage;
+        }
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 
 
     @PostMapping(path = "/negative", produces = {"image/png", "image/jpeg", "image/webp"})
-    public byte[] hue(@RequestParam(name = "file") MultipartFile file) throws IOException {
-
-        String mimetype = imageHelpersService.getImageType(file);
+    public byte[] hue(@RequestParam(name = "file") MultipartFile file) throws IOException, MimeTypeException {
 
 
-        imageHelpersService.isFileValid(file, mimetype);
+        if (imageHelpersService.isImageValid(file)) {
 
-        byte[] bytesImage = commonImageFilterService.negative(file,
-                imageHelpersService.getExtension(mimetype)
-        );
+            String mimetype = imageHelpersService.getImageType(file);
+
+            byte[] bytesImage = commonImageFilterService.negative(file,
+                    imageHelpersService.getExtension(mimetype)
+            );
 
 
-        return bytesImage;
+            return bytesImage;
+        }
+
+
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 
 
     @PostMapping(path = "/saturation", produces = {"image/png", "image/jpeg", "image/webp"})
     public byte[] saturation(@RequestParam(name = "file") MultipartFile file,
-                             @RequestParam(name = "value") SATURATION_IMAGE_VALUES value) throws IOException {
-
-        String mimetype = imageHelpersService.getImageType(file);
+                             @RequestParam(name = "value") SATURATION_IMAGE_VALUES value) throws IOException, MimeTypeException {
 
 
-        imageHelpersService.isFileValid(file, mimetype);
+        if (imageHelpersService.isImageValid(file)) {
+            String mimetype = imageHelpersService.getImageType(file);
+            byte[] bytesImage = basicImageFilterService.saturation(file,
+                    imageHelpersService.getExtension(mimetype),
+                    value
+            );
 
-        byte[] bytesImage = basicImageFilterService.saturation(file,
-                imageHelpersService.getExtension(mimetype),
-                value
-        );
+
+            return bytesImage;
+        }
 
 
-        return bytesImage;
+        throw new MimetypeNotSupportedException("Please provide an image with a valid mimetype");
     }
 }

@@ -31,10 +31,16 @@ public class FileProcessingController {
         String extension = fileService.getExtension(mimetype);
 
 
-        return new FileResponseDto(
-                mimetype,
-                extension
-        );
+        if (fileService.isValidFile(file)) {
+
+            return new FileResponseDto(
+                    mimetype,
+                    extension
+            );
+
+        }
+
+        throw new IllegalStateException("Unkown error");
 
 
     }

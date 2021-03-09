@@ -1,11 +1,14 @@
 package com.lsandoval9.springmedia.services.image;
 
+import com.lsandoval9.springmedia.exceptions.EmptyFileException;
+import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
 import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import com.lsandoval9.springmedia.services.file.FileService;
 import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
 import net.coobird.thumbnailator.resizers.DefaultResizerFactory;
 import net.coobird.thumbnailator.resizers.Resizer;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,19 +93,20 @@ public class ImageHelpersService {
 
     /**
      * @param file      image as a multipartfile
-     * @param imageType String containing the mimetype of the image
      * @return boolean if the image is valid and not null
      */
-    public boolean isFileValid(MultipartFile file, String imageType) {
-
+    public boolean isImageValid(MultipartFile file) throws IOException, MimeTypeException {
 
         if (file.isEmpty()) {
 
-            return false;
+            throw new EmptyFileException("Please provide a file");
 
+        } else if (!isSupportedMimeType(fileService.getMimetype(file))) {
+
+            throw new MimetypeNotSupportedException("Please provide a valid file with the correct mimetype");
         }
 
-        return isSupportedMimeType(imageType);
+        return true;
 
     }
 

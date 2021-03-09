@@ -4,6 +4,7 @@ import com.lsandoval9.springmedia.exceptions.InvalidFileException;
 import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import com.lsandoval9.springmedia.services.image.AsciiImageFilterService;
 import com.lsandoval9.springmedia.services.image.ImageHelpersService;
+import org.apache.tika.mime.MimeTypeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,14 +54,14 @@ public class AsciiImageFilterController {
 
     @PostMapping(path = "/ascii", produces = {"image/jpeg"})
     public byte[] parseToAscii(@RequestParam(name = "file") MultipartFile file,
-                               @RequestParam(name = "negative") boolean negative) throws IOException {
+                               @RequestParam(name = "negative") boolean negative) throws IOException, MimeTypeException {
 
         String imageType = imageHelpersService.getImageType(file);
 
 	// TODO: make negative optional
 
 
-        if (imageHelpersService.isFileValid(file, imageType)) {
+        if (imageHelpersService.isImageValid(file)) {
 
             BufferedImage image = imageHelpersService.getBufferedImage(file);
 
@@ -71,26 +72,20 @@ public class AsciiImageFilterController {
             return convert;
         }
 
-        List<String > enumConstants = Stream.of(SUPPORTED_IMAGE_TYPES.values())
-                .map(SUPPORTED_IMAGE_TYPES::getTypeName)
-                .collect(Collectors.toList());
-
-        throw new InvalidFileException("Error ocurred, file invalid", enumConstants);
+        throw new MimeTypeException("Error ocurred, file invalid");
     }
 
 
     @PostMapping(path = "/ascii-text", produces = {"text/plain"})
     public String parseToAsciiText(@RequestParam(name = "file") MultipartFile file,
-                               @RequestParam(name = "negative") boolean negative) throws IOException {
+                               @RequestParam(name = "negative") boolean negative) throws IOException, MimeTypeException {
 
         String imageType = imageHelpersService.getImageType(file);
 
 
-        if (imageHelpersService.isFileValid(file, imageType)) {
+        if (imageHelpersService.isImageValid(file)) {
 
             BufferedImage image = imageHelpersService.getBufferedImage(file);
-
-            String extension = imageHelpersService.getExtension(imageType);
 
             String convert = asciiImageFilterService.convertToAsciiText(image, negative);
 
@@ -98,13 +93,7 @@ public class AsciiImageFilterController {
         }
 
 
-        List<String > enumConstants = Stream.of(SUPPORTED_IMAGE_TYPES.values())
-                .map(SUPPORTED_IMAGE_TYPES::getTypeName)
-                .collect(Collectors.toList());
-
-
-        throw new InvalidFileException("Error ocurred, file invalid",
-                enumConstants);
+        throw new MimeTypeException("Error ocurred, file invalid");
     }
 
 }
