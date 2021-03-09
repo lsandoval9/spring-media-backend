@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
@@ -62,6 +63,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
                 e.getMessage(),
                 "CHECK_MIMETYPE",
+                LocalDateTime.now()
+        );
+
+
+        return errorMessage;
+
+    }
+
+
+    @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessageDto fileSizeExceded(IOException e) {
+
+        ErrorMessageDto errorMessage = new ErrorMessageDto(
+
+                e.getMessage(),
+                "Please provide a file smaller than 2 MB",
                 LocalDateTime.now()
         );
 

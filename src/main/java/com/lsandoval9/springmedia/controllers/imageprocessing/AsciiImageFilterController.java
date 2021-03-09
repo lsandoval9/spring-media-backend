@@ -36,7 +36,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 @RestController
-@RequestMapping(path = "/fi")
+@RequestMapping(path = "/im")
 public class AsciiImageFilterController {
 
     private final ImageHelpersService imageHelpersService;
@@ -56,6 +56,8 @@ public class AsciiImageFilterController {
                                @RequestParam(name = "negative") boolean negative) throws IOException {
 
         String imageType = imageHelpersService.getImageType(file);
+
+	// TODO: make negative optional
 
 
         if (imageHelpersService.isFileValid(file, imageType)) {
