@@ -1,11 +1,5 @@
 package com.lsandoval9.springmedia.helpers.enums;
 
-import org.apache.commons.lang3.EnumUtils;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public enum SUPPORTED_IMAGE_TYPES {
 
     PNG("image/png"),

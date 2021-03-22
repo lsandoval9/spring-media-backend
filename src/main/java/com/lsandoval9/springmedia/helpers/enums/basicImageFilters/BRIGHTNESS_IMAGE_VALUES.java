@@ -2,8 +2,8 @@ package com.lsandoval9.springmedia.helpers.enums.basicImageFilters;
 
 public enum BRIGHTNESS_IMAGE_VALUES {
 
-    LESS_VERY_HIGHT(-35),
-    LESS_HIGHT(-25),
+    LESS_VERY_HIGHT(-50),
+    LESS_HIGHT(-35),
     LESS_MEDIUM(-15),
     LESS_LIGHT(-5),
     LIGHT(5),

@@ -1,13 +1,13 @@
 package com.lsandoval9.springmedia.controllers.imageprocessing;
 
 import com.lsandoval9.springmedia.exceptions.MimetypeNotSupportedException;
-import com.lsandoval9.springmedia.services.image.ImageHelpersService;
 import com.lsandoval9.springmedia.helpers.enums.RGB_COLORS;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.BRIGHTNESS_IMAGE_VALUES;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.SATURATION_IMAGE_VALUES;
 import com.lsandoval9.springmedia.helpers.enums.basicImageFilters.UNICOLOR_FILTER_VALUES;
-import com.lsandoval9.springmedia.services.image.CommonImageFilterService;
 import com.lsandoval9.springmedia.services.image.BasicImageFilterService;
+import com.lsandoval9.springmedia.services.image.CommonImageFilterService;
+import com.lsandoval9.springmedia.services.image.ImageHelpersService;
 import org.apache.tika.mime.MimeTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
