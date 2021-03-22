@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice()
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
@@ -31,7 +30,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorMessageDto mimetypeNotSupportedException(
             MimetypeNotSupportedException e) {
 
-        String types = StringUtils.join(e.getTypes(), "--");
+        String types = StringUtils.join(e.getTypes(), ",");
 
         ErrorMessageDto error = new ErrorMessageDto(
                 e.getMessage(),

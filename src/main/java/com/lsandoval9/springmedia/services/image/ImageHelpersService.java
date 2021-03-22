@@ -140,7 +140,7 @@ public class ImageHelpersService {
         int newWidth = image.getWidth();
         int newHeight = image.getHeight();
 
-        int ratio = 850;
+        int ratio = 400;
 
         while (newWidth > ratio || newHeight > ratio) {
 

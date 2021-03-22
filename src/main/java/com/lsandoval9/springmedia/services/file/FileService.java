@@ -3,19 +3,13 @@ package com.lsandoval9.springmedia.services.file;
 import com.lsandoval9.springmedia.exceptions.EmptyFileException;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 @Service()
 public class FileService {

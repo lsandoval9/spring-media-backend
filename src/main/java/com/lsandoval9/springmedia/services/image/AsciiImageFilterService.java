@@ -41,7 +41,7 @@ public class AsciiImageFilterService {
         String[] text = sb.toString().split("\n");
 
         byte[] bytes = drawString(text, newImage.getWidth(), newImage.getHeight(),
-                "jpeg");
+                "png");
 
         return bytes;
 

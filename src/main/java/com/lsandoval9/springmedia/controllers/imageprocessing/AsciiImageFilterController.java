@@ -1,7 +1,5 @@
 package com.lsandoval9.springmedia.controllers.imageprocessing;
 
-import com.lsandoval9.springmedia.exceptions.InvalidFileException;
-import com.lsandoval9.springmedia.helpers.enums.SUPPORTED_IMAGE_TYPES;
 import com.lsandoval9.springmedia.services.image.AsciiImageFilterService;
 import com.lsandoval9.springmedia.services.image.ImageHelpersService;
 import org.apache.tika.mime.MimeTypeException;
@@ -14,9 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /*
 Copyright (c) 2011 Aravind Rao
@@ -33,7 +28,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
  Original repo - https://gist.github.com/shmert/3859200
 
- Some modifications to the original code were made
+ Some modifications to the original code were made - lsandoval9
 
 */
 @RestController
@@ -52,7 +47,7 @@ public class AsciiImageFilterController {
     }
 
 
-    @PostMapping(path = "/ascii", produces = {"image/jpeg"})
+    @PostMapping(path = "/ascii", produces = {"image/png"})
     public byte[] parseToAscii(@RequestParam(name = "file") MultipartFile file,
                                @RequestParam(name = "negative") boolean negative) throws IOException, MimeTypeException {
 
